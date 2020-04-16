@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+  <h3>Downloads available to {{ current_user.email }}</h3>
+  <table class="table table-striped">
+    <thead>
+      <th>Submission Date</th>
+      <th>Original File</th>
+      <th>Processed File</th>
+    </thead>
+    <tbody>
+      {% for f in files_urls_dates %}
+        <tr>
+          <td>{{ f.2 }}</td>
+          <td><a href="{{ f.1 }}">{{ f.0 }}</a></td>
+          <td>TODO</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

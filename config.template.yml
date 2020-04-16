@@ -1,0 +1,10 @@
+app:
+  secret_key: <<<<< YOU NEED TO ADD THIS >>>>>>
+
+db:
+  uri: sqlite:///db.db
+  track_modifications: false
+
+uploads:
+  dir: uploads
+  max_size: 1048576  # 1 MB

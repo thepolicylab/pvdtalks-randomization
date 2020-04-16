@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>PVD Talks Replication Uploader</h1>
+{% for message in get_flashed_messages() %}
+  <p><b>Error</b>: {{ message }}</p>
+{% endfor %}
+{% if current_user.is_authenticated %}
+  <p>Welcome back! You can upload new CSVs <a href="{{ url_for('upload_route') }}">here</a>. You can download your old CSVs with randomizations <a href="{{ url_for('download_route') }}">here</a>.</p>
+{% else %}
+  Before proceeding you will need to <a href="{{ url_for('login_route') }}">log in</a>.
+{% endif %}
+{% endblock %}

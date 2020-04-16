@@ -1,0 +1,13 @@
+# Python cruft
+*.pyc
+__pycache__
+venv/
+
+# Editor cruft
+*~
+.vscode
+
+# Data files
+config.yml
+uploads/
+*.db
