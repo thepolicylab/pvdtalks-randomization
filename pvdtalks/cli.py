@@ -1,4 +1,5 @@
 import getpass
+from typing import Optional
 
 import click
 from flask import Flask
@@ -20,7 +21,8 @@ def create_db_command():
 @user_cli.command('create')
 @click.argument('email')
 @click.option('-l', '--lab', 'is_lab_member', is_flag=True)
-def create_user_command(email: str, is_lab_member: bool):
+@click.option('-p', '--password', 'password', default=None, help='The user password', nargs=1)
+def create_user_command(email: str, is_lab_member: bool, password: Optional[str]):
   click.echo(f'Creating user {email}')
   email = email.strip().lower()
 
@@ -29,12 +31,14 @@ def create_user_command(email: str, is_lab_member: bool):
     click.echo(f'User {email} already exists. Perhaps you want to reset the password?')
     return
 
-  password = getpass.getpass('Password: ')
-  check_password = getpass.getpass('Retype password: ')
-  while password != check_password:
-    click.echo('Passwords don\'t match. Try again.')
+  if not password:
     password = getpass.getpass('Password: ')
     check_password = getpass.getpass('Retype password: ')
+    while password != check_password:
+      click.echo('Passwords don\'t match. Try again.')
+      password = getpass.getpass('Password: ')
+      check_password = getpass.getpass('Retype password: ')
+      
   user = User(email=email, password=generate_password_hash(password), is_lab_member=is_lab_member)
   db.session.add(user)
   db.session.commit()

@@ -16,30 +16,19 @@ from werkzeug.utils import secure_filename
 
 from . import models  # This registers all of our models
 from .cli import register_cli
+from .config import config_app, config_celery
 from .extensions import register_extensions
 from .views import blueprint
 
+from .tasks import celery
+
 
 def create_app() -> Flask:
-
-  # TODO (khw): This is obviously bad
-  with open('config.yml') as config_file:
-    config = yaml.safe_load(config_file)
-
   app = Flask(__name__)
-
-  app.config['SECRET_KEY'] = config['app']['secret_key']
+  config_app(app)
 
   # Setup the CLI
   register_cli(app)
-
-  # Configure the database
-  app.config['SQLALCHEMY_DATABASE_URI'] = config['db']['uri']
-  app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = config['db'].get('track_modifications', False)
-
-  # Configure the uploader
-  app.config['UPLOAD_DIR'] = config['uploads']['dir']
-  app.config['UPLOAD_MAX_SIZE'] = config['uploads']['max_size']
 
   # Register extensions
   register_extensions(app)
@@ -47,4 +36,13 @@ def create_app() -> Flask:
   # Register routes
   app.register_blueprint(blueprint)
 
-  return app
+  config_celery(celery)
+
+  TaskBase = celery.Task
+  class ContextTask(TaskBase):
+    def __call__(self, *args, **kwargs):
+      with app.app_context():
+        return TaskBase.__call__(self, *args, **kwargs) 
+  celery.Task = ContextTask
+
+  return app, celery

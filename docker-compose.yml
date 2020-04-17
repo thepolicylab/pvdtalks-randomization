@@ -1,0 +1,51 @@
+version: '3.5'
+
+services:
+  app:
+    build: .
+    image: &app app
+    restart: "no"
+    command: ["./start.sh"]
+    env_file: 
+      - .env
+    ports:
+      - "5000:5000"
+    networks:
+      - basic
+    depends_on: 
+      - worker
+
+  broker:
+    image: rabbitmq:3
+    env_file:
+      - .env
+    networks:
+      - basic
+  
+  # flower:
+  #   image: zoomeranalytics/flower:0.9.1-4.0.2
+  #   restart: "no"
+  #   env_file: 
+  #     - .env
+  #   ports:
+  #     - "5555:5555"
+  #   networks:
+  #     - basic
+  #   depends_on: 
+  #     - broker
+
+  worker:
+    build: .
+    image: *app
+    restart: "no"
+    env_file: 
+      - .env
+    command: ["celery", "-A", "autoapp:celery", "worker", "--concurrency=1", "--hostname=worker@%h", "--loglevel=INFO"]
+    depends_on: 
+      - broker
+    networks: 
+      - basic
+
+networks:
+  basic:
+    driver: bridge

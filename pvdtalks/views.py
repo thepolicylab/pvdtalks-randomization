@@ -9,6 +9,8 @@ from werkzeug.utils import secure_filename
 
 from .extensions import lm
 from .models import Submission, User, db
+from . import tasks
+
 
 
 blueprint = Blueprint('public', __name__, template_folder='templates')
@@ -87,6 +89,12 @@ def download_file(file_id: int, final_filename: str):
     get_path_from_filename(submission.original_filename, create=False),
     submission.final_filename
   )
+
+
+@blueprint.route('/foo')
+def foo_route():
+  s = tasks.long_add.delay(20, 30)
+  return 'asdf'
 
 
 @blueprint.route('/download')

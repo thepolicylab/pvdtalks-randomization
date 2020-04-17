@@ -1,3 +1,4 @@
 from pvdtalks.app import create_app
+from pvdtalks import tasks
 
-app = create_app()
+app, celery = create_app()

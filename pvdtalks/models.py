@@ -20,3 +20,11 @@ class Submission(db.Model):
   original_filename = db.Column(db.String(256), nullable=False)
   final_filename = db.Column(db.String(256), nullable=False)
   created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
+
+
+class Answer(db.Model):
+  __tablename__ = 'answers'
+
+  id = db.Column(db.Integer, primary_key=True)
+  answer = db.Column(db.Integer)
+  created_at = db.Column(db.DateTime, default=datetime.datetime.utcnow)
