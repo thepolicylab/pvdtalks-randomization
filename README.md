@@ -6,7 +6,5 @@ This is a webapp using the Flask framework.
 To build and prototype do the following at the unix command line within this directory (edited in case you have different versions, etc)
 
 ```
-docker build --tag pvdtalks:1.0 .
-
-
+docker-compose up
 ```
