@@ -12,3 +12,7 @@ venv/
 config.yml
 uploads/
 *.db
+
+# Terraform cruft
+.terraform
+terraform.tfstate*
