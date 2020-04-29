@@ -4,3 +4,4 @@ flask_sqlalchemy
 pyyaml
 celery
 python-dotenv
+pg8000
