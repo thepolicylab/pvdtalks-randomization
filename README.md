@@ -26,4 +26,10 @@ You should then be able to go to `http://localhost:5000` in your browser. The de
 
 To shut down the app do `docker-compose down`.
 
+To install dependencies by hand do:
+
+```
+pip install -r requirements.txt
+```
+
 To shut down the virtual environment do `deactivate`.
