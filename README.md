@@ -33,3 +33,21 @@ pip install -r requirements.txt
 ```
 
 To shut down the virtual environment do `deactivate`.
+
+## Other dependencies
+
+You will need python.
+
+You will need postgresql
+
+```
+brew install  postgresql
+```
+
+Since I don't need postgres running all the time, I do the following to start:
+
+```
+pg_ctl -D /usr/local/var/postgres start
+```
+
+
