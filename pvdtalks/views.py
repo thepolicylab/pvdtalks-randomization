@@ -1,7 +1,7 @@
 from pathlib import Path
-from typing import Union
+from typing import (Union, List)
 
-from flask import (Blueprint, abort, current_app, flash, redirect, render_template, 
+from flask import (Blueprint, abort, current_app, flash, redirect, render_template,
   request, send_from_directory, url_for)
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash
@@ -11,6 +11,8 @@ from .extensions import lm
 from .models import Submission, User, db
 from . import tasks
 
+import numpy as np
+import pandas as pd
 
 
 blueprint = Blueprint('public', __name__, template_folder='templates')
@@ -49,11 +51,11 @@ def login_route():
   if not user:
     flash(f'No such user {email}')
     return render_template('login.html')
-  
+
   if check_password_hash(user.password, password):
     login_user(user)
     return redirect(url_for('public.index_route'))
-  
+
   flash('Incorrect password')
   return render_template('login.html')
 
@@ -79,11 +81,11 @@ def download_file(file_id: int, final_filename: str):
   # Do you have permission to download?
   if (not current_user.is_lab_member) or (submission.user_id != current_user.id):
     return abort(401)
-  
+
   # Did you get this URL from the right place?
   if not submission.final_filename == final_filename:
     return abort(404)
-  
+
   # If so, then you should be able to download this file
   return send_from_directory(
     get_path_from_filename(submission.original_filename, create=False),
@@ -104,7 +106,7 @@ def download_route():
     submissions = Submission.query.all()
   else:
     submissions = Submission.query.filter_by(user_id=current_user.id).all()
-  
+
   files_urls_dates = []
   for submission in submissions:
     files_urls_dates.append((
@@ -112,7 +114,7 @@ def download_route():
       get_url_from_submission(submission),
       submission.created_at
     ))
-  
+
   return render_template('download.html', files_urls_dates=files_urls_dates)
 
 
@@ -125,7 +127,7 @@ def get_path_from_filename(filename: str, create: bool = False) -> Path:
   Args:
     filename: The name of the file being saved
     create: Whether to created the upload directory when called
-  
+
   Return:
     The path the file is contained in
   """
@@ -142,7 +144,7 @@ def get_path_from_filename(filename: str, create: bool = False) -> Path:
 def upload_route():
   if request.method == 'GET':
     return render_template('upload.html')
-  
+
   if request.content_length > current_app.config['UPLOAD_MAX_SIZE']:
     flash('File too large')
     return render_template('upload.html')
@@ -165,6 +167,19 @@ def upload_route():
     extension_num += 1
 
   #### TODO (khw): Here is where you could add your stuff Jake
+  ## (jwb): This is probably very inefficient but perhaps a reasonable place to start.
+  def complete_ra(N:int,m:int,conditions:List[int]) -> pd.Series:
+      assignment = np.random.permutation(np.repeat(conditions,[N-m,m],axis=0))
+      return assignment
+
+  N = len(cur_savename)
+  m = np.floor(N/2)
+  cur_savename = cur_savename.assign(trt=complete_ra(N=N,m=m,conditions=[0,1]))
+
+  ## Make sure that dat2 is the same number of rows as dat
+  assert(len(dat2)==len(dat))
+  ## Make sure that we have randomly assigned half to treatment
+  assert(sum(dat2['trt'])==np.floor(len(dat)/2))
 
   # Save the file
   file.save(cur_savename)
