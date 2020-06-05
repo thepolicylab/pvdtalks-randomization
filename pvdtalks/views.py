@@ -177,9 +177,9 @@ def upload_route():
   cur_savename = cur_savename.assign(trt=complete_ra(N=N,m=m,conditions=[0,1]))
 
   ## Make sure that dat2 is the same number of rows as dat
-  assert(len(dat2)==len(dat))
+  assert(len(cur_savename)==N)
   ## Make sure that we have randomly assigned half to treatment
-  assert(sum(dat2['trt'])==np.floor(len(dat)/2))
+  assert(sum(cur_savename['trt'])==m)
 
   # Save the file
   file.save(cur_savename)
